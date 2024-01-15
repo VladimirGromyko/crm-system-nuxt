@@ -1,6 +1,7 @@
 <template>
-  <section class="grid section" style="min-height: 100lvh">
-    <LayoutSidebar />
+  <LayoutLoader v-if="isLoadingStore.loading"/>
+  <section v-else :class="{grid: authStore.isAuth}" style="min-height: 100lvh">
+    <LayoutSidebar v-if="authStore.isAuth"/>
     <div>
       <slot />
     </div>
@@ -9,6 +10,26 @@
 </template>
 
 <script lang="ts" setup>
+
+import {useAuthStore, useIsLoadingStore} from "~/store/auth.store";
+import {account} from '@/utils/appwrite'
+
+const isLoadingStore = useIsLoadingStore()
+const authStore = useAuthStore()
+const router = useRouter()
+
+onMounted(async () => {
+  try {
+    const user = await account.get()
+    if (user) {
+      authStore.set(user)
+    }
+  } catch (errors) {
+      await router.push('/login')
+  } finally {
+    isLoadingStore.set(false)
+  }
+})
 </script>
 
 <style scoped>

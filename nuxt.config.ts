@@ -15,7 +15,8 @@ export default defineNuxtConfig({
       }
     ],
     'nuxt-icon',
-    'radix-vue/nuxt'
+    'radix-vue/nuxt',
+    '@pinia/nuxt'
   ],
   shadcn: {
     /**
@@ -27,5 +28,8 @@ export default defineNuxtConfig({
      * @default "./components/ui"
      */
     componentDir: './components/ui'
+  },
+  pinia: {
+    storesDirs: ['./store/**']
   }
 })
