@@ -12,12 +12,11 @@
 </template>
 <script lang="ts" setup>
 import {useAuthStore, useIsLoadingStore} from "~/store/auth.store";
-import {account} from '@/utils/appwrite'
+import {account} from '@/lib/utils/appwrite'
 
 const isLoadingStore = useIsLoadingStore()
 const authStore = useAuthStore()
 const router = useRouter()
-//TODO: Auth
 const logout = async () => {
   isLoadingStore.set(true)
   await account.deleteSession('current')

@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import {useAuthStore, useIsLoadingStore} from "~/store/auth.store";
-import {account} from '@/utils/appwrite'
+import {account} from '@/lib/utils/appwrite'
 import {v4 as uuid} from 'uuid'
 
 useSeoMeta({title: 'Login | CRM System'})
