@@ -5,8 +5,10 @@
     <div v-else>
       <div class="grid grid-cols-5 gap-16">
         <div v-for="(column, index) in data" :key="column.id" @dragover="handleDragOver" @drop="() => handleDrop(column)">
-          <div class="rounded bg-slate-700 py-1 px-5 mb-2 text-center">
-            {{ column.name }}
+          <div class="rounded bg-slate-700 py-1 px-5 mb-2 text-center"
+               :style="generateColumnStyle(index, data?.length)"
+          >
+               {{ column.name }}
           </div>
           <div>
             <KanbanCreateDeal :refetch="refetch" :status="column.id" />
@@ -38,6 +40,7 @@ import {useMutation} from "@tanstack/vue-query";
 import type {EnumStatus} from "~/types/deals.types";
 import {DB} from "~/lib/utils/appwrite";
 import {COLLECTION_DEALS, DB_ID} from "~/app.constants";
+import {generateColumnStyle} from "~/components/kanban/generateGradient";
 
 useSeoMeta({
   title: 'Home | CRM System'
