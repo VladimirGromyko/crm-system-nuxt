@@ -16,7 +16,10 @@ export default defineNuxtConfig({
     ],
     'nuxt-icon',
     'radix-vue/nuxt',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    ['@vee-validate/nuxt',
+      { autoImports: true }
+    ]
   ],
   shadcn: {
     /**
