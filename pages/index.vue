@@ -1,7 +1,8 @@
 <template>
   <div class="p-10">
     <h1 class="font-bold text-2xl mb-10">CRM System</h1>
-    <div>
+    <div v-if="isLoading">Loading...</div>
+    <div v-else>
       <UiCard class="mb-3" draggable="true">
         <UiCardHeader role="button">name card</UiCardHeader>
         <UiCardContent>Company</UiCardContent>
@@ -13,6 +14,7 @@
 
 <script setup lang="ts">
 import type {ICard, IColumn} from "~/components/kanban/kanban.types";
+import {useKanbanQuery} from "~/components/kanban/useKanbanQuery";
 
 useSeoMeta({
   title: 'Home | CRM System'
@@ -20,6 +22,7 @@ useSeoMeta({
 
 const dragCardRef = ref<ICard |null>(null)
 const sourceColumnRef = ref<IColumn | null>(null)
+const {data, isLoading, refetch} = useKanbanQuery()
 
 </script>
 
