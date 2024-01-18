@@ -13,25 +13,29 @@
           <div class="rounded bg-slate-700 py-1 px-5 mb-2 text-center"
                :style="generateColumnStyle(index, data?.length)"
           >
-               {{ column.name }}
+            {{ column.name }}
           </div>
           <div>
-            <KanbanCreateDeal :refetch="refetch" :status="column.id" />
+            <KanbanCreateDeal :refetch="refetch" :status="column.id"/>
             <UiCard v-for="card in column.items"
                     :key="card.id"
                     class="mb-5"
                     draggable="true"
                     @dragstart="() => handleDragStart(card, column)">
-              <UiCardHeader role="button">
-                <UiCardTitle>{{card.name}}</UiCardTitle>
-                <UiCardDescription class="mt-2 block">{{convertCurrency(card.price)}}</UiCardDescription>
+              <UiCardHeader role="button" @click="store.set(card)">
+                <UiCardTitle>{{ card.name }}</UiCardTitle>
+                <UiCardDescription class="mt-2 block">{{ convertCurrency(card.price) }}</UiCardDescription>
               </UiCardHeader>
-              <UiCardContent class="text-xs"><div>Компания</div>{{card.companyName}}</UiCardContent>
-              <UiCardFooter>{{dayjs(card.$createdAt).format('DD MMMM YYYY')}}</UiCardFooter>
+              <UiCardContent class="text-xs">
+                <div>Компания</div>
+                {{ card.companyName }}
+              </UiCardContent>
+              <UiCardFooter>{{ dayjs(card.$createdAt).format('DD MMMM YYYY') }}</UiCardFooter>
             </UiCard>
           </div>
         </div>
       </div>
+      <KanbanSlideover/>
     </div>
   </div>
 </template>
@@ -46,6 +50,7 @@ import type {EnumStatus} from "~/types/deals.types";
 import {DB} from "~/lib/utils/appwrite";
 import {COLLECTION_DEALS, DB_ID} from "~/app.constants";
 import {generateColumnStyle} from "~/components/kanban/generateGradient";
+import {useDealSlideStore} from "~/store/dealSlide.store";
 
 useSeoMeta({
   title: 'Home | CRM System'
@@ -54,6 +59,7 @@ useSeoMeta({
 const dragCardRef = ref<ICard | null>(null)
 const sourceColumnRef = ref<IColumn | null>(null)
 const {data, isLoading, refetch} = useKanbanQuery()
+const store = useDealSlideStore()
 
 interface IMutationVariables {
   docId: string,
@@ -64,9 +70,10 @@ const {mutate} = useMutation({
   mutationKey: ['move card'],
   mutationFn: ({docId, status}: IMutationVariables) => DB.updateDocument(DB_ID, COLLECTION_DEALS, docId, {status}),
   onSuccess: () => {
-      refetch()
+    refetch()
   },
 })
+
 function handleDragStart(card: ICard, column: IColumn) {
   dragCardRef.value = card
   sourceColumnRef.value = column
