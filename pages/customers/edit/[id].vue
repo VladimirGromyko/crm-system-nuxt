@@ -2,11 +2,13 @@
 
 import type {ICustomer} from "~/types/deals.types";
 import {useMutation, useQuery} from "@tanstack/vue-query";
-import {DB} from "~/lib/utils/appwrite";
-import {COLLECTION_COMMENTS, COLLECTION_CUSTOMERS, DB_ID} from "~/app.constants";
+import {DB, storage} from "~/lib/utils/appwrite";
+import {COLLECTION_CUSTOMERS, DB_ID, STORAGE_ID} from "~/app.constants";
+import {v4 as uuid} from 'uuid';
 
-interface ICustomerFormState extends Pick<ICustomer, "avatar_url" | "email" | "name" | "from_source"> {
-
+interface ICustomerFormState extends Pick<ICustomer, "avatar_url" | "email" | "name" | "from_source"> {}
+interface InputFileEvent extends Event {
+  target: HTMLInputElement
 }
 useSeoMeta({title: 'Редактирование компании'})
 const route = useRoute()
@@ -15,7 +17,7 @@ const {handleSubmit, defineField, setFieldValue, setValues, values} = useForm<IC
 
 const {data, isSuccess} = useQuery({
   queryKey: ['get customer', customerId],
-  queryFn: () => DB.getDocument(DB_ID, COLLECTION_CUSTOMERS, customerId)
+  queryFn: () => DB.getDocument(DB_ID, COLLECTION_CUSTOMERS, customerId),
 })
 watch(isSuccess, () => {
   const initialData = data.value as unknown as ICustomerFormState
@@ -33,7 +35,16 @@ const [fromSource, fromSourceAttrs] = defineField('from_source')
 
 const {mutate, isPending} = useMutation({
   mutationKey: ['update customer', customerId],
-  mutationFn: (data: ICustomerFormState) => DB.updateDocument(DB_ID, COLLECTION_COMMENTS, customerId, data)
+  mutationFn: (data: ICustomerFormState) => DB.updateDocument(DB_ID, COLLECTION_CUSTOMERS, customerId, data)
+})
+
+const {mutate: uploadImage, isPending: isUploadImagePending} = useMutation({
+  mutationKey: ['update image'],
+  mutationFn: (file: File) => storage.createFile(STORAGE_ID, uuid(), file),
+  onSuccess(data) {
+    const response = storage.getFileDownload(STORAGE_ID, data.$id)
+    setFieldValue('avatar_url', response.href)
+  },
 })
 
 const onSubmit = handleSubmit(values => {
@@ -68,6 +79,24 @@ const onSubmit = handleSubmit(values => {
         type="text"
         class="input"
     />
+    <img v-if="values.avatar_url || isUploadImagePending"
+         :src="values.avatar_url"
+         alt=""
+         width="50"
+         height="50"
+         class="rouded-full my-4"
+    />
+    <div class="grid w-full max-w-sm items-center gap-1.5 input">
+      <label>
+        <div class="text-sm mb-2">Логотип</div>
+        <UiInput
+          type="file"
+          placeholder="Choose the file"
+          :onchange="(e:InputFileEvent) => e?.target?.files?.length && uploadImage(e.target.files[0])"
+          :disabled="isUploadImagePending"
+        />
+      </label>
+    </div>
     <UiButton :disabled="isPending" variant="secondary" class="mt-3">
       {{isPending ? 'Загрузка...' : 'Сохранить'}}
     </UiButton>
@@ -77,6 +106,6 @@ const onSubmit = handleSubmit(values => {
 
 <style scoped>
 .input {
-  @apply border-[#161c26] mb-2 placeholder:text-[#748092] focus:border-border
+  @apply border-[#161c26] mb-4 placeholder:text-[#748092] focus:border-border transition-colors
 }
 </style>
