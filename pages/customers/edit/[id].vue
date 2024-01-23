@@ -19,8 +19,6 @@ const {data, isSuccess} = useQuery({
 })
 watch(isSuccess, () => {
   const initialData = data.value as unknown as ICustomerFormState
-  debugger
-  console.log(initialData)
   setValues({
     email: initialData.email,
     avatar_url: initialData.avatar_url,
