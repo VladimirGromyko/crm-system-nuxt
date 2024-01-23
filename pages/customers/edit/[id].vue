@@ -16,7 +16,7 @@ const customerId = route.params.id as string
 const {handleSubmit, defineField, setFieldValue, setValues, values} = useForm<ICustomerFormState>()
 
 const {data, isSuccess} = useQuery({
-  queryKey: ['get customer', customerId],
+  queryKey: ['get customer', uuid()],
   queryFn: () => DB.getDocument(DB_ID, COLLECTION_CUSTOMERS, customerId),
 })
 watch(isSuccess, () => {
