@@ -33,7 +33,15 @@
                       <div>Компания</div>
                       {{ element.companyName }}
                     </UiCardContent>
-                    <UiCardFooter>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</UiCardFooter>
+                    <UiCardFooter>
+                      <div class="flex justify-between">
+                        <div>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</div>
+                        <Icon name="iconamoon:menu-kebab-vertical-circle-light"
+                              class="cursor-pointer"
+                              size="39"
+                        />
+                      </div>
+                    </UiCardFooter>
                   </UiCard>
                 </div>
               </template>
@@ -75,6 +83,7 @@ interface IMutationVariables {
   status?: string,
   placeInStatus: number,
 }
+
 interface ICheckMove extends DOMRect, HTMLElement {
   added: {
     element: ICard,
@@ -99,7 +108,7 @@ const {mutate} = useMutation({
     })
   },
   onSuccess: () => {
-  refetch()
+    refetch()
   },
 })
 
