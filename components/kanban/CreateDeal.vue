@@ -42,7 +42,7 @@
     <UiInput
         placeholder="Компания"
         v-model="customerName"
-        :customerNameAttrs="customerName"
+        :customerNameAttrs="customerNameAttrs"
         type="text"
         class="input"
     />
@@ -79,6 +79,10 @@ const props = defineProps({
   },
   refetch: {
     type: Function
+  },
+  placeInStatus: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -103,7 +107,7 @@ const {mutate, isPending} = useMutation({
 })
 
 const onSubmit = handleSubmit(values => {
-  values.placeInStatus = version(uuid4())
+  values.placeInStatus = props.placeInStatus
   mutate(values)
 })
 
