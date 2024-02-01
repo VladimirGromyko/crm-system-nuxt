@@ -13,7 +13,7 @@
             {{ column.name }}
           </div>
           <div class="col-3">
-            <KanbanCreateDeal :refetch="refetch" :status="column.id"/>
+            <KanbanCreateDeal :refetch="refetch" :status="column.id" :placeInStatus="column.items.length"/>
 
             <draggable
                 :list="columnItems(column)"
