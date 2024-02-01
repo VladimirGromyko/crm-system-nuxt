@@ -21,10 +21,13 @@ export function useKanbanQuery() {
                         name: deal.name,
                         price: deal.price,
                         companyName: deal.customer.name,
-                        status: column.name
+                        status: column.name,
+                        placeInStatus: deal.placeInStatus
                     })
                 }
             }
+            newBoard.forEach((list) =>
+                list.items.sort((a, b) => a.placeInStatus - b.placeInStatus))
             return newBoard
         }
     })

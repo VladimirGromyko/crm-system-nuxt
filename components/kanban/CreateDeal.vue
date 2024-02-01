@@ -55,8 +55,7 @@
 
 <script lang="ts" setup>
 import {useMutation} from "@tanstack/vue-query";
-import {v4 as uuid4} from 'uuid'
-import {Input} from "~/components/ui/input";
+import {v4 as uuid4, version} from 'uuid'
 import type {IDeal} from "~/types/deals.types";
 import {useForm} from "vee-validate";
 import {DB} from "~/lib/utils/appwrite";
@@ -69,7 +68,8 @@ interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
     email: string,
     name: string
   }
-  status: string
+  status: string,
+  placeInStatus: number
 }
 
 const props = defineProps({
@@ -103,6 +103,7 @@ const {mutate, isPending} = useMutation({
 })
 
 const onSubmit = handleSubmit(values => {
+  values.placeInStatus = version(uuid4())
   mutate(values)
 })
 
