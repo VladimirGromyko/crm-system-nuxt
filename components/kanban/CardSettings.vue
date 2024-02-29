@@ -22,7 +22,7 @@
         </DropdownMenuLabel>
         <DropdownMenuSeparator class="opacity-10 bg-[#9f66bd]"/>
         <DropdownMenuGroup>
-          <DropdownMenuItem class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90">
+          <DropdownMenuItem class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90" @click="editHandler">
             <Icon
                 name="i-tdesign:edit"
                 class="w-1em h-1em p-1"
@@ -52,6 +52,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+const editHandler = (e: PointerEvent) => {
+  
+  console.log("hello :", e)
+}
+
 
 </script>
 
