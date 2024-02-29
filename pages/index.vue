@@ -33,7 +33,10 @@
                       <div>Компания</div>
                       {{ element.companyName }}
                     </UiCardContent>
-                    <UiCardFooter>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</UiCardFooter>
+                    <UiCardFooter class="flex justify-between">
+                      <span>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</span>
+                      <KanbanCardSettings />
+                    </UiCardFooter>
                   </UiCard>
                 </div>
               </template>
