@@ -60,6 +60,10 @@ const props = defineProps({
   isPending: {
     type: Boolean,
     default: false
+  },
+  resetStatus: {
+    type: Boolean,
+    default: false
   }
 })
 const isOpenForm = ref<boolean>(false)
@@ -81,8 +85,11 @@ const [customerName, customerNameAttrs] = defineField('customer.name')
 const onSubmit = handleSubmit(values => {
   emit("createSubmit", values)
 })
-watch(() => handleReset, (reset) => {
-  emit("reset", reset)
+watch(() => props.resetStatus, (reset) => {
+  if (reset) {
+    handleReset()
+    emit("reset")
+  }
 })
 
 </script>
