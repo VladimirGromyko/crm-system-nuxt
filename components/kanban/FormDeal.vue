@@ -39,7 +39,7 @@
 import type {IDeal} from "~/types/deals.types";
 import {useForm} from "vee-validate";
 
-interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
+export interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
   customer: {
     email: string,
     name: string
