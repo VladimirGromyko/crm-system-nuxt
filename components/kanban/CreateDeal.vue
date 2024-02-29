@@ -20,8 +20,9 @@
   <KanbanFormDeal :isOpen="isOpenForm"
                   :isPending="isPending"
                   :status="status"
+                  :resetStatus="resetStatus"
                   @createSubmit="createSubmit"
-                  @reset="reset"
+                  @reset="handleReset"
   />
 </template>
 
@@ -57,11 +58,9 @@ const props = defineProps({
   }
 })
 
-let handleReset: () => void
-const reset = (callback: () => void) =>{
-  debugger
-  handleReset = callback
-}
+let resetStatus: boolean = false
+const handleReset = () => (resetStatus = !resetStatus)
+
 
 const {mutate, isPending} = useMutation({
   mutationKey: ['create a new deal'],
