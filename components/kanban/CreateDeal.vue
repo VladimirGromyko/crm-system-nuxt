@@ -29,20 +29,12 @@
 <script lang="ts" setup>
 import {useMutation} from "@tanstack/vue-query";
 import {v4 as uuid4} from 'uuid'
-import type {IDeal} from "~/types/deals.types";
+import type {IDealFormState} from "~/components/kanban/FormDeal.vue";
 import {DB} from "~/lib/utils/appwrite";
 import {COLLECTION_DEALS, DB_ID} from "~/app.constants";
 
-const isOpenForm = ref<boolean>(false)
 
-interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
-  customer: {
-    email: string,
-    name: string
-  }
-  status: string,
-  placeInStatus: number
-}
+const isOpenForm = ref<boolean>(false)
 
 const props = defineProps({
   status: {
@@ -71,7 +63,7 @@ const {mutate, isPending} = useMutation({
   },
 })
 
-const createSubmit = (value: any) => {
+const createSubmit = (value: IDealFormState) => {
   value.placeInStatus = props.placeInStatus
   mutate(value)
 }
