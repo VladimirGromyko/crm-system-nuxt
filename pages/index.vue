@@ -24,7 +24,7 @@
             >
               <template #item="{ element }">
                 <div>
-                  <UiCard class="mb-5">
+                  <UiCard v-if="true" class="mb-5">
                     <UiCardHeader role="button" @click="store.set(element)">
                       <UiCardTitle>{{ element.name }}</UiCardTitle>
                       <UiCardDescription class="mt-2 block">{{ convertCurrency(element.price) }}</UiCardDescription>
@@ -38,6 +38,17 @@
                       <KanbanCardSettings />
                     </UiCardFooter>
                   </UiCard>
+                  <div v-else>
+                    <KanbanFormDeal
+
+                    />
+<!--                    :isOpen="isOpenForm"-->
+<!--                    :isPending="isPending"-->
+<!--                    :isReset="isReset"-->
+<!--                    :initDeal="initDeal"-->
+<!--                    @submit="editSubmit"-->
+<!--                    @reset="handleReset"-->
+                  </div>
                 </div>
               </template>
             </draggable>
@@ -61,6 +72,7 @@ import {COLLECTION_DEALS, DB_ID} from "~/app.constants";
 import {generateColumnStyle} from "~/components/kanban/generateGradient";
 import {useDealSlideStore} from "~/store/dealSlide.store";
 import draggable from "vuedraggable";
+import type {IDealFormState} from "~/components/kanban/FormDeal.vue";
 
 useSeoMeta({
   title: 'Home | CRM System'
@@ -92,6 +104,8 @@ interface ICheckMove extends DOMRect, HTMLElement {
     oldIndex: number
   }
 }
+
+const initDeal = {} as IDealFormState
 
 const {mutate} = useMutation({
   mutationKey: ['move card place'],

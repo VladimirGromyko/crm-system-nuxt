@@ -20,8 +20,9 @@
   <KanbanFormDeal :isOpen="isOpenForm"
                   :isPending="isPending"
                   :status="status"
-                  :resetStatus="resetStatus"
-                  @createSubmit="createSubmit"
+                  :isReset="isReset"
+                  :initDeal="initDeal"
+                  @submit="createSubmit"
                   @reset="handleReset"
   />
 </template>
@@ -50,8 +51,10 @@ const props = defineProps({
   }
 })
 
-let resetStatus: boolean = false
-const handleReset = () => (resetStatus = !resetStatus)
+const initDeal = {} as IDealFormState
+
+let isReset: boolean = false
+const handleReset = () => (isReset = !isReset)
 
 
 const {mutate, isPending} = useMutation({
