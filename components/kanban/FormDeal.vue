@@ -47,25 +47,15 @@ export interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
   status: string,
   placeInStatus: number
 }
-const emit = defineEmits(["createSubmit", "reset"]);
-const props = defineProps({
-  status: {
-    type: String,
-    default: ''
-  },
-  isOpen: {
-    type: Boolean,
-    default: false
-  },
-  isPending: {
-    type: Boolean,
-    default: false
-  },
-  resetStatus: {
-    type: Boolean,
-    default: false
-  }
-})
+const emit = defineEmits(["submit", "reset"]);
+interface IProps {
+  status?: string,
+  isOpen: boolean,
+  isPending: boolean,
+  isReset: boolean,
+  initDeal: IDealFormState,
+}
+const props = defineProps<IProps>();
 const isOpenForm = ref<boolean>(false)
 watch(() => props.isOpen, (value) => {
   isOpenForm.value = value
@@ -83,10 +73,10 @@ const [customerEmail, customerEmailAttrs] = defineField('customer.email')
 const [customerName, customerNameAttrs] = defineField('customer.name')
 
 const onSubmit = handleSubmit(values => {
-  emit("createSubmit", values)
+  emit("submit", values)
 })
-watch(() => props.resetStatus, (reset) => {
-  if (reset) {
+watch(() => props.isReset, (res) => {
+  if (res) {
     handleReset()
     emit("reset")
   }
