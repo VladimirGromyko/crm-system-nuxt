@@ -50,7 +50,9 @@ export interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
   customer: {
     email: string,
     name: string
+    compapyId?: string
   }
+  id?: string
   status: string,
   placeInStatus: number
 }
@@ -76,8 +78,10 @@ const [customerName, customerNameAttrs] = defineField('customer.name')
 
 const onSubmit = handleSubmit(values => {
   if (props.initDeal) {
-    values.status = props.initDeal?.status ?? ''
-    values.placeInStatus = props.initDeal?.placeInStatus ?? 0
+    values.status = props.initDeal.status
+    values.placeInStatus = props.initDeal.placeInStatus
+    values.customer.compapyId = props.initDeal.companyId
+    values.id = props.initDeal.id
     emit("openForm", props.initDeal?.isEdit)
   }
   emit("submit", values)
