@@ -1,4 +1,4 @@
-import type {EnumStatus, IDeal} from "~/types/deals.types";
+import type {EnumStatus} from "~/types/deals.types";
 
 export interface ICard {
     id: string
@@ -6,6 +6,8 @@ export interface ICard {
     price: number
     $createdAt: string
     companyName: string
+    companyId: string
+    email: string
     status: string
     placeInStatus: number
 }

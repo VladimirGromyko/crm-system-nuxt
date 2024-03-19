@@ -13,45 +13,44 @@
             {{ column.name }}
           </div>
           <div class="col-3">
-            <KanbanCreateDeal :refetch="refetch" :status="column.id" :placeInStatus="column.items.length"/>
-
-            <draggable
-                :list="columnItems(column)"
-                class="min-h-screen"
-                item-key="id"
-                group="a"
-                @change="(e:any) => checkMove(e, column)"
-            >
-              <template #item="{ element }">
-                <div>
-                  <UiCard v-if="true" class="mb-5">
-                    <UiCardHeader role="button" @click="store.set(element)">
-                      <UiCardTitle>{{ element.name }}</UiCardTitle>
-                      <UiCardDescription class="mt-2 block">{{ convertCurrency(element.price) }}</UiCardDescription>
-                    </UiCardHeader>
-                    <UiCardContent class="text-xs">
-                      <div>Компания</div>
-                      {{ element.companyName }}
-                    </UiCardContent>
-                    <UiCardFooter class="flex justify-between">
-                      <span>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</span>
-                      <KanbanCardSettings />
-                    </UiCardFooter>
-                  </UiCard>
-                  <div v-else>
-                    <KanbanFormDeal
-
-                    />
-<!--                    :isOpen="isOpenForm"-->
-<!--                    :isPending="isPending"-->
-<!--                    :isReset="isReset"-->
-<!--                    :initDeal="initDeal"-->
-<!--                    @submit="editSubmit"-->
-<!--                    @reset="handleReset"-->
+            <KanbanCreateDeal :refetch="refetch"
+                              :status="column.id"
+                              :placeInStatus="column.items.length"
+            />
+            <div>
+              <draggable
+                  :list="columnItems(column)"
+                  class="min-h-screen"
+                  item-key="id"
+                  group="a"
+                  @change="(e:ICheckMove) => checkMove(e, column)"
+              >
+                <template #item="{ element }">
+                  <div>
+                    <template v-if="!element.isEdit.value" >
+                      <UiCard class="mb-5">
+                        <UiCardHeader role="button" @click="store.set(element)">
+                          <UiCardTitle>{{ element.name }}</UiCardTitle>
+                          <UiCardDescription class="mt-2 block">{{ convertCurrency(element.price) }}</UiCardDescription>
+                        </UiCardHeader>
+                        <UiCardContent class="text-xs"><div>Компания</div>{{ element.companyName }}</UiCardContent>
+                        <UiCardFooter class="flex justify-between">
+                          <span>{{ dayjs(element.$createdAt).format('DD MMMM YYYY') }}</span>
+                          <KanbanCardSettings @openSettings="openSettings(element.isEdit)"/>
+                        </UiCardFooter>
+                      </UiCard>
+                    </template>
+                    <template v-else>
+                      <div v-if="element.isEdit.value">
+                        <KanbanFormDeal :initDeal="element"
+                                        @openForm="openSettings"
+                        />
+                      </div>
+                    </template>
                   </div>
-                </div>
-              </template>
-            </draggable>
+                </template>
+              </draggable>
+            </div>
           </div>
         </div>
       </div>
@@ -62,34 +61,15 @@
 
 <script setup lang="ts">
 import type {ICard, ICardMutate, IColumn} from "~/components/kanban/kanban.types";
-import {useKanbanQuery} from "~/components/kanban/useKanbanQuery";
+import {useKanbanQuery, useMoveDealMutation} from "~/components/kanban/useKanbanQuery";
 import {convertCurrency} from "~/utils/convertCurrency";
 import dayjs from "dayjs";
-import {useMutation} from "@tanstack/vue-query";
-import type {EnumStatus, IDeal} from "~/types/deals.types";
-import {DB} from "~/lib/utils/appwrite";
-import {COLLECTION_DEALS, DB_ID} from "~/app.constants";
+import type {EnumStatus} from "~/types/deals.types";
 import {generateColumnStyle} from "~/components/kanban/generateGradient";
 import {useDealSlideStore} from "~/store/dealSlide.store";
 import draggable from "vuedraggable";
-import type {IDealFormState} from "~/components/kanban/FormDeal.vue";
+import type {Ref} from "vue";
 
-useSeoMeta({
-  title: 'Home | CRM System'
-})
-
-const dragCardRef = ref<ICard | null>(null)
-const targetColumnRef = ref<EnumStatus | null>(null)
-const targetPlaceRef = ref<number | null>(null)
-const sourcePlaceRef = ref<number | null>(null)
-const {data, isLoading, refetch} = useKanbanQuery()
-const store = useDealSlideStore()
-
-interface IMutationVariables {
-  docId: string,
-  status?: string,
-  placeInStatus: number,
-}
 interface ICheckMove extends DOMRect, HTMLElement {
   added: {
     element: ICard,
@@ -105,23 +85,26 @@ interface ICheckMove extends DOMRect, HTMLElement {
   }
 }
 
-const initDeal = {} as IDealFormState
+export interface ICardFormTrigger extends ICard {
+  isEdit: Ref<boolean>
+}
 
-const {mutate} = useMutation({
-  mutationKey: ['move card place'],
-  mutationFn: (newData: IMutationVariables) => {
-    return DB.updateDocument(DB_ID, COLLECTION_DEALS, newData.docId, {
-      status: newData.status,
-      placeInStatus: newData.placeInStatus
-    })
-  },
-  onSuccess: () => {
-  refetch()
-  },
+useSeoMeta({
+  title: 'Home | CRM System'
 })
 
-const columnItems = ((column: IColumn) => ([...column.items] as ICard[]))
+const dragCardRef = ref<ICard | null>(null)
+const targetColumnRef = ref<EnumStatus | null>(null)
+const targetPlaceRef = ref<number | null>(null)
+const sourcePlaceRef = ref<number | null>(null)
+const {data: data, isLoading, refetch} = useKanbanQuery()
+const store = useDealSlideStore()
 
+const {mutate} = useMoveDealMutation(refetch)
+
+const columnItems = (column: IColumn):ICardFormTrigger[] => (column.items.map(el => ({...el, isEdit: ref(false)})))
+
+const openSettings = (el: Ref<boolean>) => (el.value = !el.value)
 function checkMove(e: ICheckMove, col: IColumn) {
   if (e.added) {
     dragCardRef.value = {...e.added.element, status: col.name}

@@ -1,5 +1,5 @@
 <template>
-  <form v-if="isOpenForm" @submit="onSubmit" class="form">
+  <form @submit="onSubmit" class="form">
     <UiInput
         placeholder="Наименование"
         v-model="name"
@@ -20,6 +20,7 @@
         :customerEmailAttrs="customerEmailAttrs"
         type="text"
         class="input"
+        :disabled="initDeal?.isEdit"
     />
     <UiInput
         placeholder="Компания"
@@ -27,17 +28,23 @@
         :customerNameAttrs="customerNameAttrs"
         type="text"
         class="input"
+        :disabled="initDeal?.isEdit"
     />
     <button class="btn" :disabled="isPending">
-      {{isPending ? 'Загрузка...' : 'Добавить'}}
+      {{isPending ? 'Loading...' : initDeal?.isEdit ? 'Change' : 'Add'}}
     </button>
+    <span v-if="initDeal?.isEdit" class="float-right">
+      <button  class="btn" :disabled="isPending" @click="() => emit('openForm', initDeal?.isEdit)">Cancel</button>
+    </span>
   </form>
+
 </template>
 
 <script lang="ts" setup>
 
 import type {IDeal} from "~/types/deals.types";
 import {useForm} from "vee-validate";
+import type {ICardFormTrigger} from "~/pages/index.vue";
 
 export interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
   customer: {
@@ -47,19 +54,14 @@ export interface IDealFormState extends Pick<IDeal, 'name' | 'price'> {
   status: string,
   placeInStatus: number
 }
-const emit = defineEmits(["submit", "reset"]);
+const emit = defineEmits(["submit", "reset", "openForm"]);
 interface IProps {
   status?: string,
-  isOpen: boolean,
-  isPending: boolean,
-  isReset: boolean,
-  initDeal: IDealFormState,
+  isPending?: boolean,
+  isReset?: boolean,
+  initDeal?: ICardFormTrigger,
 }
 const props = defineProps<IProps>();
-const isOpenForm = ref<boolean>(false)
-watch(() => props.isOpen, (value) => {
-  isOpenForm.value = value
-})
 
 const {handleSubmit, defineField, handleReset} = useForm<IDealFormState>({
   initialValues: {
@@ -73,12 +75,26 @@ const [customerEmail, customerEmailAttrs] = defineField('customer.email')
 const [customerName, customerNameAttrs] = defineField('customer.name')
 
 const onSubmit = handleSubmit(values => {
+  if (props.initDeal) {
+    values.status = props.initDeal?.status ?? ''
+    values.placeInStatus = props.initDeal?.placeInStatus ?? 0
+    emit("openForm", props.initDeal?.isEdit)
+  }
   emit("submit", values)
 })
 watch(() => props.isReset, (res) => {
   if (res) {
     handleReset()
     emit("reset")
+  }
+})
+
+onMounted(()=> {
+  if (props.initDeal) {
+    name.value = props.initDeal?.name ?? ''
+    price.value = props.initDeal?.price ?? 0
+    customerEmail.value = props.initDeal?.email ?? ''
+    customerName.value = props.initDeal?.companyName ?? ''
   }
 })
 

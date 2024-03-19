@@ -1,7 +1,7 @@
 <template>
     <UiDropdownMenu>
-      <UiDropdownMenuTrigger as-child>
-        <Button
+      <UiDropdownMenuTrigger>
+        <button
           class="transition-all opacity-5 hover:opacity-100 hover:text-[#a252c8]"
           @click="setAutoPlacement"
         >
@@ -10,7 +10,7 @@
               class="fade-in-100 fade-out-0"
               size="35"
           />
-        </Button>
+        </button>
       </UiDropdownMenuTrigger>
       <UiDropdownMenuContent :class="cn('w-56 absolute bg-[--muted]', place)">
         <UiDropdownMenuLabel class="flex align-middle">
@@ -23,21 +23,29 @@
         </UiDropdownMenuLabel>
         <UiDropdownMenuSeparator class="opacity-10 bg-[#9f66bd]"/>
         <UiDropdownMenuGroup>
-          <UiDropdownMenuItem class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90" @click="editHandler">
-            <Icon
-                name="i-tdesign:edit"
-                class="w-1em h-1em p-1"
-                size="26"
-            />
-            <span class="pl-2 italic">Edit</span>
+          <UiDropdownMenuItem
+              class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90"
+              @click="() => emit('openSettings')">
+            <button>
+              <Icon
+                  name="i-tdesign:edit"
+                  class="w-1em h-1em p-1"
+                  size="26"
+              />
+              <span class="pl-2 italic">Edit</span>
+            </button>
           </UiDropdownMenuItem>
-          <UiDropdownMenuItem class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90">
-            <Icon
-                name="i-mingcute:delete-2-line"
-                class="w-1em h-1em p-1"
-                size="26"
-            />
-            <span class="pl-2 italic">Delete</span>
+          <UiDropdownMenuItem
+              class="focus:bg-[#9f66bd] cursor-pointer flex align-middle opacity-90"
+              @click="">
+            <button>
+              <Icon
+                  name="i-mingcute:delete-2-line"
+                  class="w-1em h-1em p-1"
+                  size="26"
+              />
+              <span class="pl-2 italic">Delete</span>
+            </button>
           </UiDropdownMenuItem>
         </UiDropdownMenuGroup>
       </UiDropdownMenuContent>
@@ -46,8 +54,10 @@
 
 <script setup lang="ts">
 import {cn} from "~/lib/utils";
+import {Button} from "~/components/ui/button";
+const emit = defineEmits(["openSettings"]);
 const place = ref('left-5 -top-8')
-const setAutoPlacement = (e: PointerEvent)=> {
+const setAutoPlacement = (e: MouseEvent)=> {
   const innerWidth = e.view?.innerWidth
   const innerHeight = e.view?.innerHeight
   if (innerWidth && innerHeight) {
@@ -64,12 +74,6 @@ const setAutoPlacement = (e: PointerEvent)=> {
     }
   }
 }
-
-const editHandler = (e: PointerEvent) => {
-
-  console.log("hello :", e)
-}
-
 
 </script>
 

@@ -34,19 +34,13 @@
 </template>
 
 <script setup lang="ts">
-
-import {useQuery} from "@tanstack/vue-query";
-import {DB} from "~/lib/utils/appwrite.js";
-import {COLLECTION_CUSTOMERS, DB_ID} from "~/app.constants.js";
 import type {ICustomer} from "~/types/deals.types";
+import {useCustomersQuery} from "~/pages/customers/useCustomersQuery";
 
 useSeoMeta({
   title: 'Customers | CRM System'
 })
-const {data, isLoading} = useQuery({
-  queryKey: ['customers'],
-  queryFn: () => DB.listDocuments(DB_ID, COLLECTION_CUSTOMERS)
-})
+const {data, isLoading} = useCustomersQuery()
 const customers = computed(() => data.value?.documents as unknown as ICustomer[])
 
 </script>
